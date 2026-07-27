@@ -112,16 +112,4 @@ public class TaskResponse {
     public void setCurrentStage(TaskStage currentStage) {
         this.currentStage = currentStage;
     }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof TaskResponse that)) return false;
-        return id == that.id;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(id);
-    }
 }

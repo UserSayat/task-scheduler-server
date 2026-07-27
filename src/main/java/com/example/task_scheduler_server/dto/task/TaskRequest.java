@@ -106,16 +106,4 @@ public class TaskRequest {
     public void setCurrentStage(TaskStage currentStage) {
         this.currentStage = currentStage;
     }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof TaskRequest that)) return false;
-        return Objects.equals(name, that.name) && Objects.equals(description, that.description) && Objects.equals(priority, that.priority);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(name, description, priority);
-    }
 }

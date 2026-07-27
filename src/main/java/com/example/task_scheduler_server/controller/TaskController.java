@@ -29,7 +29,8 @@ public class TaskController {
     }
 
     @PatchMapping("/{id}/addStage")
-    public ResponseEntity<CommonResponse<Void>> addStage(@PathVariable long id, @RequestParam TaskStage stage) {
+    public ResponseEntity<CommonResponse<Void>> addStage(@PathVariable long id,
+                                                         @RequestParam TaskStage stage) {
         taskService.addStage(id, stage);
         return ResponseEntity.ok()
                 .build();
@@ -42,7 +43,8 @@ public class TaskController {
 //    }
 
     @PutMapping("/{id}")
-    public ResponseEntity<CommonResponse<TaskResponse>> editTask(@PathVariable long id, @RequestBody TaskRequest request) {
+    public ResponseEntity<CommonResponse<TaskResponse>> editTask(@PathVariable long id,
+                                                                 @RequestBody TaskRequest request) {
         return ResponseEntity.ok(new CommonResponse<>(taskService.editTask(id, request)));
     }
 
@@ -59,14 +61,16 @@ public class TaskController {
     }
 
     @PatchMapping("/{id}/changeStage")
-    public ResponseEntity<CommonResponse<Void>> changeStage(@PathVariable long id, @RequestParam TaskStage stage) {
+    public ResponseEntity<CommonResponse<Void>> changeStage(@PathVariable long id,
+                                                            @RequestParam TaskStage stage) {
         taskService.changeStage(id, stage);
         return ResponseEntity.ok()
                 .build();
     } // Manually changing the status to "DONE" is prohibited.
 
     @PatchMapping("/{id}/comment")
-    public ResponseEntity<CommonResponse<Void>> addComment(@PathVariable long id, @RequestBody String comment) {
+    public ResponseEntity<CommonResponse<Void>> addComment(@PathVariable long id,
+                                                           @RequestBody String comment) {
         taskService.addComment(id, comment);
         return ResponseEntity.ok()
                 .build();

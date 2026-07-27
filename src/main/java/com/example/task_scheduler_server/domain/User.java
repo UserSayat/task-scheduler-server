@@ -3,6 +3,7 @@ package com.example.task_scheduler_server.domain;
 import com.example.task_scheduler_server.common.Position;
 import jakarta.persistence.*;
 
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -13,7 +14,7 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     private String lastName;
     private String firstName;
@@ -29,16 +30,21 @@ public class User {
     @OneToMany(mappedBy = "executor")
     private List<Task> tasks = new ArrayList<>();
 
+    private ZonedDateTime createdAt;
+    private ZonedDateTime updatedAt;
+
     public User() {
     }
 
-    public User(long id, String lastName, String firstName, String middleName, Position position, boolean status) {
-        this.id = id;
+    public User(String lastName, String firstName, String middleName,
+                Position position, boolean status, ZonedDateTime createdAt, ZonedDateTime updatedAt) {
         this.lastName = lastName;
         this.firstName = firstName;
         this.middleName = middleName;
         this.position = position;
         this.isFree = status;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
     }
 
     public long getId() {
@@ -91,6 +97,18 @@ public class User {
 
     public void setTasks(List<Task> tasks) {
         this.tasks = tasks;
+    }
+
+    public ZonedDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public ZonedDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(ZonedDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 
     @Override

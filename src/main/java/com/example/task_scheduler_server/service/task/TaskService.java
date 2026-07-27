@@ -26,6 +26,20 @@ public class TaskService implements ITaskService {
         this.userRepository = userRepository;
     }
 
+    private TaskResponse toTaskResponse(Task task) {
+
+        return new TaskResponse(task.getId(),
+                task.getName(),
+                task.getDescription(),
+                task.getExecutor().getId(),
+                task.getDeadline(),
+                task.getPriority(),
+                task.getStatus(),
+                task.getComment(),
+                task.getStages(),
+                task.getCurrentStage());
+    }
+
     @Override
     public TaskResponse createTask(TaskRequest request) {
         //TODO add validation
@@ -144,19 +158,5 @@ public class TaskService implements ITaskService {
         task.setComment(newComment);
 
         taskRepository.save(task);
-    }
-
-    private TaskResponse toTaskResponse(Task task) {
-
-        return new TaskResponse(task.getId(),
-                task.getName(),
-                task.getDescription(),
-                task.getExecutor().getId(),
-                task.getDeadline(),
-                task.getPriority(),
-                task.getStatus(),
-                task.getComment(),
-                task.getStages(),
-                task.getCurrentStage());
     }
 }

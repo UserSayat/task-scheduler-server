@@ -16,7 +16,7 @@ public class Task {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     private String name;
     private String description;
@@ -156,7 +156,7 @@ public class Task {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Task task)) return false;
-        return id == task.id && Objects.equals(name, task.name) && Objects.equals(description, task.description)
+        return id.equals(task.id) && Objects.equals(name, task.name) && Objects.equals(description, task.description)
                 && Objects.equals(executor, task.executor) && Objects.equals(deadline, task.deadline)
                 && Objects.equals(priority, task.priority) && status == task.status
                 && Objects.equals(comment, task.comment) && Objects.equals(stages, task.stages)
