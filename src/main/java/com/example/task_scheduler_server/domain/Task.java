@@ -22,9 +22,13 @@ public class Task {
     private String name;
     private String description;
 
-    @ManyToOne()
-    @JoinColumn(name = "executor_id")
-    private User executor;
+    @ManyToMany()
+    @JoinTable(
+            name = "task_executors",
+            joinColumns = @JoinColumn(name = "task_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
+    private List<User> executors = new ArrayList<>();
 
     private ZonedDateTime deadline;
     private Long priority;
@@ -46,13 +50,13 @@ public class Task {
     public Task() {
     }
 
-    public Task(String name, String description, User executor,
+    public Task(String name, String description, List<User> executors,
                 ZonedDateTime deadline, Long priority, TaskStatus status,
                 String comment, List<TaskStage> stages,
                 ZonedDateTime createdAt, ZonedDateTime updatedAt) {
         this.name = name;
         this.description = description;
-        this.executor = executor;
+        this.executors = executors;
         this.deadline = deadline;
         this.priority = priority;
         this.status = status;
@@ -84,12 +88,12 @@ public class Task {
         this.description = description;
     }
 
-    public User getExecutor() {
-        return executor;
+    public List<User> getExecutors() {
+        return executors;
     }
 
-    public void setExecutor(User executor) {
-        this.executor = executor;
+    public void setExecutors(List<User> executors) {
+        this.executors = executors;
     }
 
     public ZonedDateTime getDeadline() {
@@ -157,7 +161,7 @@ public class Task {
         if (this == o) return true;
         if (!(o instanceof Task task)) return false;
         return id.equals(task.id) && Objects.equals(name, task.name) && Objects.equals(description, task.description)
-                && Objects.equals(executor, task.executor) && Objects.equals(deadline, task.deadline)
+                && Objects.equals(executors, task.executors) && Objects.equals(deadline, task.deadline)
                 && Objects.equals(priority, task.priority) && status == task.status
                 && Objects.equals(comment, task.comment) && Objects.equals(stages, task.stages)
                 && Objects.equals(currentStage, task.currentStage) && Objects.equals(createdAt, task.createdAt)

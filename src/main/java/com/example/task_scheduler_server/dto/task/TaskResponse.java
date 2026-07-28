@@ -2,18 +2,16 @@ package com.example.task_scheduler_server.dto.task;
 
 import com.example.task_scheduler_server.common.TaskStage;
 import com.example.task_scheduler_server.common.TaskStatus;
-import com.example.task_scheduler_server.domain.User;
 
 import java.time.ZonedDateTime;
 import java.util.List;
-import java.util.Objects;
 
 public class TaskResponse {
 
     private long id;
     private String name;
     private String description;
-    private Long executorId;
+    private List<Long> executorIds;
     private ZonedDateTime deadline;
     private Long priority;
     private TaskStatus status;
@@ -24,11 +22,11 @@ public class TaskResponse {
     public TaskResponse() {
     }
 
-    public TaskResponse(long id, String name, String description, Long executorId, ZonedDateTime deadline, Long priority, TaskStatus status, String comment, List<TaskStage> stages, long currentStage) {
+    public TaskResponse(long id, String name, String description, List<Long> executorIds, ZonedDateTime deadline, Long priority, TaskStatus status, String comment, List<TaskStage> stages, long currentStage) {
         this.id = id;
         this.name = name;
         this.description = description;
-        this.executorId = executorId;
+        this.executorIds = executorIds;
         this.deadline = deadline;
         this.priority = priority;
         this.status = status;
@@ -57,12 +55,12 @@ public class TaskResponse {
         this.description = description;
     }
 
-    public Long getExecutorId() {
-        return executorId;
+    public List<Long> getExecutorIds() {
+        return executorIds;
     }
 
-    public void setExecutorId(Long executorId) {
-        this.executorId = executorId;
+    public void setExecutorIds(List<Long> executorIds) {
+        this.executorIds = executorIds;
     }
 
     public ZonedDateTime getDeadline() {

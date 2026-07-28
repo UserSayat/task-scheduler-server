@@ -27,7 +27,7 @@ public class User {
     private boolean isFree;
 
 
-    @OneToMany(mappedBy = "executor")
+    @ManyToMany(mappedBy = "executors")
     private List<Task> tasks = new ArrayList<>();
 
     private ZonedDateTime createdAt;

@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -29,16 +30,18 @@ public class TaskService implements ITaskService {
     }
 
     private TaskResponse toTaskResponse(Task task) {
-        Long executorId = null;
+        List<Long> executorIds = null;
 
-        if (task.getExecutor() != null)
-            executorId = task.getExecutor().getId();
+        if (task.getExecutors() != null)
+            executorIds = task.getExecutors().stream()
+                    .map(User::getId)
+                    .toList();
 
 
         return new TaskResponse(task.getId(),
                 task.getName(),
                 task.getDescription(),
-                executorId,
+                executorIds,
                 task.getDeadline(),
                 task.getPriority(),
                 task.getStatus(),
@@ -51,16 +54,22 @@ public class TaskService implements ITaskService {
     public TaskResponse createTask(TaskRequest request) {
         //TODO add validation
 
-        User executor = null;
+        List<User> executors = new ArrayList<>();
 
-        if (request.getExecutorId() != null) {
-            executor = userRepository.findById(request.getExecutorId())
-                    .orElseThrow(() -> new EntityNotFoundException("Executor: " + request.getExecutorId() + " not found"));
+        if (request.getExecutorIds() != null) {
+            for (Long executorId : request.getExecutorIds()) {
+                if (executorId == null)
+                    continue;
+                User executor = userRepository.findById(executorId)
+                        .orElseThrow(() -> new EntityNotFoundException("Executor: " + executorId + " not found"));
+
+                executors.add(executor);
+            }
         }
 
         Task task = new Task(request.getName(),
                 request.getDescription(),
-                executor,
+                executors,
                 request.getDeadline(),
                 request.getPriority(),
                 request.getStatus(),
@@ -99,8 +108,10 @@ public class TaskService implements ITaskService {
         Task task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new EntityNotFoundException("Task: " + taskId + " not found"));
 
-        if ((task.getExecutor() == null) || (!task.getExecutor().equals(user))) {
-            task.setExecutor(user);
+        if (!task.getExecutors().contains(user)) {
+            List<User> users = task.getExecutors();
+            users.add(user);
+            task.setExecutors(users);
             task.setUpdatedAt(ZonedDateTime.now(ZoneOffset.UTC));
             List<Task> tasks = user.getTasks();
             tasks.add(task);
@@ -114,13 +125,23 @@ public class TaskService implements ITaskService {
         Task task = taskRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Task: " + id + " not found"));
 
-        User executor = userRepository.findById(request.getExecutorId())
-                .orElseThrow(() -> new EntityNotFoundException("Executor: " + request.getExecutorId() + " not found"));
+        List<User> executors = new ArrayList<>();
+
+        for (Long executorId : request.getExecutorIds()) {
+            if (executorId == null)
+                continue;
+
+            User executor = userRepository.findById(executorId)
+                    .orElseThrow(() -> new EntityNotFoundException("Executor: " + executorId + " not found"));
+
+            executors.add(executor);
+        }
 
         //TODO add validation
+        //TODO what if currentStage is null?
         task.setName(request.getName());
         task.setDescription(request.getDescription());
-        task.setExecutor(executor);
+        task.setExecutors(executors);
         task.setDeadline(request.getDeadline());
         task.setPriority(request.getPriority());
         task.setStatus(request.getStatus());
