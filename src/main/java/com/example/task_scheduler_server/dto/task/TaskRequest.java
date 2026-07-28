@@ -18,12 +18,12 @@ public class TaskRequest {
     private TaskStatus status;
     private String comment;
     private List<TaskStage> stages;
-    private TaskStage currentStage;
+    private Long currentStage;
 
     public TaskRequest() {
     }
 
-    public TaskRequest(String name, String description, Long executorId, ZonedDateTime deadline, Long priority, TaskStatus status, String comment, List<TaskStage> stages, TaskStage currentStage) {
+    public TaskRequest(String name, String description, Long executorId, ZonedDateTime deadline, Long priority, TaskStatus status, String comment, List<TaskStage> stages, Long currentStage) {
         this.name = name;
         this.description = description;
         this.executorId = executorId;
@@ -99,11 +99,11 @@ public class TaskRequest {
         this.stages = stages;
     }
 
-    public TaskStage getCurrentStage() {
+    public long getCurrentStage() {
         return currentStage;
     }
 
-    public void setCurrentStage(TaskStage currentStage) {
+    public void setCurrentStage(long currentStage) {
         this.currentStage = currentStage;
     }
 }

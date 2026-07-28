@@ -7,6 +7,7 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -37,9 +38,7 @@ public class Task {
     @Column(name = "stages", columnDefinition = "jsonb")
     private List<TaskStage> stages;
 
-    @JdbcTypeCode(SqlTypes.JSON)
-    @Column(name = "current_stage", columnDefinition = "jsonb")
-    private TaskStage currentStage;
+    private long currentStage = 0; // Sequence number of the current stage
 
     private ZonedDateTime createdAt;
     private ZonedDateTime updatedAt;
@@ -49,7 +48,7 @@ public class Task {
 
     public Task(String name, String description, User executor,
                 ZonedDateTime deadline, Long priority, TaskStatus status,
-                String comment, List<TaskStage> stages, TaskStage currentStage,
+                String comment, List<TaskStage> stages,
                 ZonedDateTime createdAt, ZonedDateTime updatedAt) {
         this.name = name;
         this.description = description;
@@ -58,8 +57,9 @@ public class Task {
         this.priority = priority;
         this.status = status;
         this.comment = comment;
-        this.stages = stages;
-        this.currentStage = currentStage;
+
+        this.stages = (stages == null) ? new ArrayList<>() : stages;
+
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
@@ -132,11 +132,11 @@ public class Task {
         this.stages = stages;
     }
 
-    public TaskStage getCurrentStage() {
+    public long getCurrentStage() {
         return currentStage;
     }
 
-    public void setCurrentStage(TaskStage currentStage) {
+    public void setCurrentStage(long currentStage) {
         this.currentStage = currentStage;
     }
 

@@ -19,12 +19,12 @@ public class TaskResponse {
     private TaskStatus status;
     private String comment;
     private List<TaskStage> stages;
-    private TaskStage currentStage;
+    private long currentStage;
 
     public TaskResponse() {
     }
 
-    public TaskResponse(long id, String name, String description, Long executorId, ZonedDateTime deadline, Long priority, TaskStatus status, String comment, List<TaskStage> stages, TaskStage currentStage) {
+    public TaskResponse(long id, String name, String description, Long executorId, ZonedDateTime deadline, Long priority, TaskStatus status, String comment, List<TaskStage> stages, long currentStage) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -105,11 +105,11 @@ public class TaskResponse {
         this.stages = stages;
     }
 
-    public TaskStage getCurrentStage() {
+    public long getCurrentStage() {
         return currentStage;
     }
 
-    public void setCurrentStage(TaskStage currentStage) {
+    public void setCurrentStage(long currentStage) {
         this.currentStage = currentStage;
     }
 }

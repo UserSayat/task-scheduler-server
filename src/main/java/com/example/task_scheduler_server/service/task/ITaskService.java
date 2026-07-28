@@ -4,17 +4,18 @@ import com.example.task_scheduler_server.common.TaskStage;
 import com.example.task_scheduler_server.domain.User;
 import com.example.task_scheduler_server.dto.task.TaskRequest;
 import com.example.task_scheduler_server.dto.task.TaskResponse;
+import com.example.task_scheduler_server.dto.task.TaskStageRequest;
 
 import java.util.List;
 
 public interface ITaskService {
     TaskResponse createTask(TaskRequest request);
-    void addStage(long id, TaskStage stage);
-    void assignExecutor(long taskId, long userId);
+    void addStage(long id, TaskStageRequest request);
+    void assignExecutor(long taskId, long executorId);
     TaskResponse editTask(long id, TaskRequest request);
     List<TaskStage> checkProgress(long id); // returns completed stages
     //List<Statistics> getReport(long id);
     List<TaskResponse> getTaskById(long id); //
-    void changeStage(long id, TaskStage stage); // Manually changing the status to "DONE" is prohibited.
+    void changeStage(long id, long taskStageSequenceNumber); // Manually changing the status to "DONE" is prohibited.
     void addComment(long id, String comment);
 }

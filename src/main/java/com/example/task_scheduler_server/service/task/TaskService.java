@@ -6,6 +6,7 @@ import com.example.task_scheduler_server.domain.Task;
 import com.example.task_scheduler_server.domain.User;
 import com.example.task_scheduler_server.dto.task.TaskRequest;
 import com.example.task_scheduler_server.dto.task.TaskResponse;
+import com.example.task_scheduler_server.dto.task.TaskStageRequest;
 import com.example.task_scheduler_server.exception.EntityNotFoundException;
 import com.example.task_scheduler_server.repository.ITaskRepository;
 import com.example.task_scheduler_server.repository.IUserRepository;
@@ -55,7 +56,7 @@ public class TaskService implements ITaskService {
                 request.getStatus(),
                 request.getComment(),
                 request.getStages(),
-                request.getCurrentStage(),
+                // Upon creation, the current stage is determined in the constructor
                 ZonedDateTime.now(ZoneOffset.UTC),
                 ZonedDateTime.now(ZoneOffset.UTC));
 
@@ -63,12 +64,12 @@ public class TaskService implements ITaskService {
     }
 
     @Override
-    public void addStage(long id, TaskStage stage) {
+    public void addStage(long id, TaskStageRequest request) {
         Task task = taskRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Task: " + id + " not found"));
 
         List<TaskStage> stages = task.getStages();
-        stages.add(stage);
+        stages.add(new TaskStage(request.getName(), request.getSequenceNumber()));
         task.setStages(stages);
         task.setUpdatedAt(ZonedDateTime.now(ZoneOffset.UTC));
 
@@ -77,12 +78,12 @@ public class TaskService implements ITaskService {
     }
 
     @Override
-    public void assignExecutor(long taskId, long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("User: " + userId + " not found"));
+    public void assignExecutor(long taskId, long executorId) {
+        User user = userRepository.findById(executorId)
+                .orElseThrow(() -> new EntityNotFoundException("User: " + executorId + " not found"));
 
         if (!user.isFree())
-            throw new IllegalArgumentException("User: " + userId + " is busy");
+            throw new IllegalArgumentException("User: " + executorId + " is busy");
 
         Task task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new EntityNotFoundException("Task: " + taskId + " not found"));
@@ -123,7 +124,7 @@ public class TaskService implements ITaskService {
                 .orElseThrow(() -> new EntityNotFoundException("Task: " + id + " not found"));
 
         return task.getStages().stream()
-                .filter(taskStage -> taskStage.getSequenceNumber() < task.getCurrentStage().getSequenceNumber())
+                .filter(taskStage -> taskStage.getSequenceNumber() <= task.getCurrentStage())
                 .toList();
     }
 
@@ -135,15 +136,15 @@ public class TaskService implements ITaskService {
     }
 
     @Override
-    public void changeStage(long id, TaskStage stage) {
+    public void changeStage(long id, long taskStageSequenceNumber) {
         Task task = taskRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Task: " + id + " not found"));
 
-        task.setCurrentStage(stage);
+        task.setCurrentStage(taskStageSequenceNumber);
         task.setUpdatedAt(ZonedDateTime.now(ZoneOffset.UTC));
 
         // Manually changing the status to "DONE" is prohibited.
-        if (task.getStages().getLast().equals(stage))
+        if (task.getStages().getLast().getSequenceNumber() == taskStageSequenceNumber)
             task.setStatus(TaskStatus.DONE);
 
         taskRepository.save(task);
