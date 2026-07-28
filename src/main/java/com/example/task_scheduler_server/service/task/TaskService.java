@@ -10,6 +10,7 @@ import com.example.task_scheduler_server.dto.task.TaskStageRequest;
 import com.example.task_scheduler_server.exception.EntityNotFoundException;
 import com.example.task_scheduler_server.repository.ITaskRepository;
 import com.example.task_scheduler_server.repository.IUserRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.time.ZoneOffset;
@@ -28,11 +29,16 @@ public class TaskService implements ITaskService {
     }
 
     private TaskResponse toTaskResponse(Task task) {
+        Long executorId = null;
+
+        if (task.getExecutor() != null)
+            executorId = task.getExecutor().getId();
+
 
         return new TaskResponse(task.getId(),
                 task.getName(),
                 task.getDescription(),
-                task.getExecutor().getId(),
+                executorId,
                 task.getDeadline(),
                 task.getPriority(),
                 task.getStatus(),
@@ -45,8 +51,12 @@ public class TaskService implements ITaskService {
     public TaskResponse createTask(TaskRequest request) {
         //TODO add validation
 
-        User executor = userRepository.findById(request.getExecutorId())
-                .orElseThrow(() -> new EntityNotFoundException("Executor: " + request.getExecutorId() + " not found"));
+        User executor = null;
+
+        if (request.getExecutorId() != null) {
+            executor = userRepository.findById(request.getExecutorId())
+                    .orElseThrow(() -> new EntityNotFoundException("Executor: " + request.getExecutorId() + " not found"));
+        }
 
         Task task = new Task(request.getName(),
                 request.getDescription(),
@@ -78,6 +88,7 @@ public class TaskService implements ITaskService {
     }
 
     @Override
+    @Transactional
     public void assignExecutor(long taskId, long executorId) {
         User user = userRepository.findById(executorId)
                 .orElseThrow(() -> new EntityNotFoundException("User: " + executorId + " not found"));
@@ -88,9 +99,12 @@ public class TaskService implements ITaskService {
         Task task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new EntityNotFoundException("Task: " + taskId + " not found"));
 
-        if (!task.getExecutor().equals(user)) {
+        if ((task.getExecutor() == null) || (!task.getExecutor().equals(user))) {
             task.setExecutor(user);
             task.setUpdatedAt(ZonedDateTime.now(ZoneOffset.UTC));
+            List<Task> tasks = user.getTasks();
+            tasks.add(task);
+            user.setTasks(tasks);
             taskRepository.save(task);
         }
     }
